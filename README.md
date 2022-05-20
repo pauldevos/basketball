@@ -1,2 +1,31 @@
-# basketball
-Web Scraper for Basketball Data
+# Basketball
+
+### Package/Folder Structure
+
+basketball
+. /nba
+. /team
+. /player
+. /league
+. /synergy
+. /shooting
+. /bbref
+. /espn
+. /ncaa
+. /realgm
+
+from basketball.nba.team import get_season_stats, get_franchise_history
+
+/nba
+
+- boxscore
+- playbyplay
+- common
+- draft
+- franchise
+- gamerotation
+- hustle
+- league
+- player
+- shotchart
+- team
