@@ -3,11 +3,11 @@ from urllib.parse import urlencode
 
 import requests
 
-from header import HTTPHeader
+import utilities.headers as util
 
 
 @dataclass
-class CommonallPlayers(HTTPHeader):
+class CommonallPlayers(util.HTTPHeader):
     IsOnlyCurrentSeason: int = 0
     LeagueID: str = "00"
     Season: str = 2021 - 22

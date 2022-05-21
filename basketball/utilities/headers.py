@@ -1,11 +1,6 @@
 from dataclasses import dataclass
 
-import requests
-
-from ..utils.headers import BASE_URL, REQUEST_HEADER
-
-
-# r = requests.get(url, headers=headers).json()
+from header_config import BASE_URL, REQUEST_HEADER
 @dataclass
 class HTTPHeader:
     endpoint: str
