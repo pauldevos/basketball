@@ -1,5 +1,9 @@
 # Basketball
 
+### Project Structure
+
+- [RealPython](https://realpython.com/python-application-layouts/)
+
 ### Package/Folder Structure
 
 basketball
