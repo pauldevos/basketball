@@ -22,10 +22,12 @@ HTTP_HEADER = {
 BASE_URL = "https://stats.nba.com/stats/"
 
 
-@dataclass
 class HTTPHeader:
-    proxies: list[str] = None
-    base_url: str = BASE_URL
+    def __init__(self, proxies, base_url=BASE_URL, request_header=HTTP_HEADER) -> None:
+        self.proxies = proxies
+        self.base_url = base_url
+        self.request_header = request_header
+
     # header: field(default_factory=dict) = HTTP_HEADER # ValueError: mutable default <class 'dict'> for field header is not allowed: use default_factory
     # header: dict = HTTP_HEADER # ValueError: mutable default <class 'dict'> for field header is not allowed: use default_factory
     # header: field(default_factory=dict) = HTTP_HEADER # ValueError: mutable default <class 'dict'> for field header is not allowed: use default_factory
@@ -50,8 +52,8 @@ class CommonallPlayers:
 
     # returns everything under the sun, not only the 3 attributes: IsOnlyCurrentSeason, LeagueID, Season
 
-    def encode_api_params_1(self):
-        return dict(self.IsOnlyCurrentSeason, self.LeagueID, self.Season)
+    # def encode_api_params_1(self):
+    #     return dict(self.IsOnlyCurrentSeason, self.LeagueID, self.Season)
 
     # return urlencode(cls.__dict_)
 
@@ -61,7 +63,56 @@ class CommonallPlayers:
     #     return True
 
 
-c = CommonallPlayers()
+class Players:
 
+    __endpoint__ = "CommonallPlayers"
+
+    def __init__(
+        self, IsOnlyCurrentSeason=0, LeagueID="00", Season="2021-22", header=HTTPHeader
+    ) -> None:
+        # these first 3 attributes constitute the (#2) API Params
+        self.IsOnlyCurrentSeason = IsOnlyCurrentSeason
+        self.LeagueID = LeagueID
+        self.Season = Season
+
+        self.header = HTTPHeader  # (1) inherit as a Class or Dict?
+
+    def encode_api_params(self):
+        return (
+            self.__dict__
+        )  # if only 3 attributes, this works, but not if I add more attributes HTTP or self.request_data
+
+    def get_http_header(self):
+        # ideally can return the http_header as a dict
+        pass
+
+    # ideally this is NOT instantiated (as doesn't have data, shouldn't be accessible to user until AFTER request)
+    def request_data(self):
+        url_api = f"{BASE_URL}/{self.__endpoint__}"
+        return requests.get(
+            url_api, params=self.encode_api_params(), headers=self.get_http_header()
+        )
+
+
+# works, has current defaults (current season)
+c = Players()
+
+# # a common use case, using a different Season than the default (current season)
+# c = Players(Season="1999-00")
+
+# # A possible needed change, with 2 possible desired interface
+# c = Players(Season="1999-00", header={"Referer": "https://www.another-website.com/"})
+# c = Players(Season="1999-00").header(Referer="https://www.another-website.com/")
+
+# # Final outputs
+# c.request_data().to_csv("downloads/my_data.csv")
+# c.request_data().to_sql("table-name")
+
+
+# # print(dir(c))
+# print(c.get_http_header())
+# c = Players(header={"Accept": "NewValue"})
+
+print(c.encode_api_params())
 # print(dir(c))
-print(c.encode_api_params_1())
+# print(c.get_http_header())
