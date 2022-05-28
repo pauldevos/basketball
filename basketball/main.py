@@ -63,12 +63,15 @@ class CommonallPlayers:
     #     return True
 
 
-class Players:
+class Players(HTTPHeader):
 
     __endpoint__ = "CommonallPlayers"
 
     def __init__(
-        self, IsOnlyCurrentSeason=0, LeagueID="00", Season="2021-22", header=HTTPHeader
+        self,
+        IsOnlyCurrentSeason=0,
+        LeagueID="00",
+        Season="2021-22",  # , header=HTTPHeader
     ) -> None:
         # these first 3 attributes constitute the (#2) API Params
         self.IsOnlyCurrentSeason = IsOnlyCurrentSeason
@@ -78,9 +81,7 @@ class Players:
         self.header = HTTPHeader  # (1) inherit as a Class or Dict?
 
     def encode_api_params(self):
-        return (
-            self.__dict__
-        )  # if only 3 attributes, this works, but not if I add more attributes HTTP or self.request_data
+        return self.__dict__  #  # if only 3 attributes, this works
 
     def get_http_header(self):
         # ideally can return the http_header as a dict
