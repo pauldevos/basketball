@@ -22,11 +22,16 @@ HTTP_HEADER = {
 BASE_URL = "https://stats.nba.com/stats/"
 
 
-class HTTPHeader:
-    def __init__(self, proxies, base_url=BASE_URL, request_header=HTTP_HEADER) -> None:
-        self.proxies = proxies
-        self.base_url = base_url
-        self.request_header = request_header
+class StatsHTTPHeader:
+
+    __base_url__ = "https://stats.nba.com/stats/"
+
+    headers = HTTP_HEADER
+
+    # def __init__(self, proxies, base_url=BASE_URL, request_header=HTTP_HEADER) -> None:
+    #     self.proxies = proxies
+    #     self.base_url = base_url
+    #     self.request_header = request_header
 
     # header: field(default_factory=dict) = HTTP_HEADER # ValueError: mutable default <class 'dict'> for field header is not allowed: use default_factory
     # header: dict = HTTP_HEADER # ValueError: mutable default <class 'dict'> for field header is not allowed: use default_factory
@@ -40,30 +45,7 @@ class HTTPHeader:
 from urllib.parse import urlencode
 
 
-@dataclass
-class CommonallPlayers:
-    IsOnlyCurrentSeason: int = 0
-    LeagueID: str = "00"
-    Season: str = "2021-22"
-
-    @classmethod
-    def encode_api_params(cls):
-        return cls.__dict__.items()
-
-    # returns everything under the sun, not only the 3 attributes: IsOnlyCurrentSeason, LeagueID, Season
-
-    # def encode_api_params_1(self):
-    #     return dict(self.IsOnlyCurrentSeason, self.LeagueID, self.Season)
-
-    # return urlencode(cls.__dict_)
-
-    # def get_request(endpoint):
-    #     url_string = f"{BASE_URL}/{endpoint}/"
-    #     requests.get(BASE_URL)
-    #     return True
-
-
-class Players(HTTPHeader):
+class CommonallPlayers(StatsHTTPHeader):
 
     __endpoint__ = "CommonallPlayers"
 
@@ -78,25 +60,24 @@ class Players(HTTPHeader):
         self.LeagueID = LeagueID
         self.Season = Season
 
-        self.header = HTTPHeader  # (1) inherit as a Class or Dict?
+    # def encode_api_params(self):
+    #     return self.__dict__  #  # if only 3 attributes, this works
 
-    def encode_api_params(self):
-        return self.__dict__  #  # if only 3 attributes, this works
+    # def get_http_header(self):
+    #     # ideally can return the http_header as a dict
+    #     pass
 
-    def get_http_header(self):
-        # ideally can return the http_header as a dict
-        pass
-
-    # ideally this is NOT instantiated (as doesn't have data, shouldn't be accessible to user until AFTER request)
-    def request_data(self):
-        url_api = f"{BASE_URL}/{self.__endpoint__}"
-        return requests.get(
-            url_api, params=self.encode_api_params(), headers=self.get_http_header()
-        )
+    # # ideally this is NOT instantiated (as doesn't have data, shouldn't be accessible to user until AFTER request)
+    # def request_data(self):
+    #     url_api = f"{BASE_URL}/{self.__endpoint__}"
+    #     return requests.get(
+    #         url_api, params=self.encode_api_params(), headers=self.get_http_header()
+    #     )
 
 
 # works, has current defaults (current season)
-c = Players()
+c = CommonallPlayers()
+
 
 # # a common use case, using a different Season than the default (current season)
 # c = Players(Season="1999-00")
@@ -114,6 +95,6 @@ c = Players()
 # print(c.get_http_header())
 # c = Players(header={"Accept": "NewValue"})
 
-print(c.encode_api_params())
+# print(c.encode_api_params())
 # print(dir(c))
 # print(c.get_http_header())
