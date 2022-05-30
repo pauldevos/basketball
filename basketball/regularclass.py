@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+import requests
+
 HTTP_HEADERS = {
     "Accept": "application/json, text/plain, */*",
     "Accept-Encoding": "gzip, deflate, br",
@@ -19,17 +21,36 @@ HTTP_HEADERS = {
 
 
 class StatsHTTPHeader:
-    base_url =  "https://stats.nba.com/stats/"
+    base_url = "https://stats.nba.com/stats/"
     http_headers = HTTP_HEADERS
-    
-    def __init__(self, header=**kwargs) -> None:
-        self.header = None
 
 
-class MyNewClass(StatsHTTPHeader):
-    pass
+class CommonallPlayers:
+
+    __endpoint__ = "CommonallPlayers"
+
+    def __init__(
+        self,
+        IsOnlyCurrentSeason=0,
+        LeagueID="00",
+        Season="2021-22",
+        headers=None,
+        api_params=None,
+    ) -> None:
+        self.headers = headers if headers else {}
+        self.api_params = api_params if api_params else {}
+        self.api_params["IsOnlyCurrentSeason"] = IsOnlyCurrentSeason
+        self.api_params["LeagueID"] = LeagueID
+        self.api_params["Season"] = Season
+
+    # ideally this is NOT instantiated (as doesn't have data, shouldn't be accessible to user until AFTER request)
+    def request_data(self):
+        url_api = f"{BASE_URL}/{self.__endpoint__}"
+        return requests.get(url_api, params=self.params, headers=self.headers)
 
 
-n = MyNewClass()
+c = CommonallPlayers()  # create with default values
+c.headers["my_new_header"] = "whatever"  # members are public
+c.api_params["my_new_param"] = "new_param"  # members are public
 
-print(n)
+res = c.request_data()
