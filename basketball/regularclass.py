@@ -25,7 +25,7 @@ class StatsHTTPHeader:
     http_headers = HTTP_HEADERS
 
 
-class CommonallPlayers:
+class CommonallPlayers(StatsHTTPHeader):
 
     __endpoint__ = "CommonallPlayers"
 
@@ -34,23 +34,32 @@ class CommonallPlayers:
         IsOnlyCurrentSeason=0,
         LeagueID="00",
         Season="2021-22",
-        headers=None,
-        api_params=None,
+        headers = None
     ) -> None:
-        self.headers = headers if headers else {}
-        self.api_params = api_params if api_params else {}
-        self.api_params["IsOnlyCurrentSeason"] = IsOnlyCurrentSeason
-        self.api_params["LeagueID"] = LeagueID
-        self.api_params["Season"] = Season
+        self.headers = headers if headers else HTTP_HEADERS
+        # self.api_params["IsOnlyCurrentSeason"] = IsOnlyCurrentSeason
+        # self.api_params["LeagueID"] = LeagueID
+        # self.api_params["Season"] = Season
+        self.IsOnlyCurrentSeason = IsOnlyCurrentSeason
+        self.LeagueID = LeagueID
+        self.Season = Season
+        
+    def api_params(self):
+        return {"IsOnlyCurrentSeason": self.IsOnlyCurrentSeason,
+                "LeagueID": self.LeagueID,
+                "Season": self.Season}
 
     # ideally this is NOT instantiated (as doesn't have data, shouldn't be accessible to user until AFTER request)
     def request_data(self):
-        url_api = f"{BASE_URL}/{self.__endpoint__}"
-        return requests.get(url_api, params=self.params, headers=self.headers)
+        url_api = f"{self.base_url}/{self.__endpoint__}"
+        return url_api # requests.get(url_api, params=self.params, headers=self.headers)
 
 
-c = CommonallPlayers()  # create with default values
-c.headers["my_new_header"] = "whatever"  # members are public
-c.api_params["my_new_param"] = "new_param"  # members are public
+c = CommonallPlayers(Season="1950-51")  # create with default values
+# c.headers["my_new_header"] = "whatever"  # members are public
+# c.api_params["my_new_param"] = "new_param"  # members are public
+print(c)
+# res = c.request_data()
+print(c.api_params())
 
-res = c.request_data()
+# print(c.headers['Accept'] = "NEW VALUE!!!")
