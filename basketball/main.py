@@ -2,7 +2,7 @@ from dataclasses import asdict, dataclass, field
 
 import requests
 
-HTTP_HEADER = {
+HTTP_HEADERS = {
     "Accept": "application/json, text/plain, */*",
     "Accept-Encoding": "gzip, deflate, br",
     "Accept-Language": "en-US,en;q=0.9",
@@ -20,45 +20,52 @@ HTTP_HEADER = {
 }
 
 BASE_URL = "https://stats.nba.com/stats/"
-
-
-class StatsHTTPHeader:
-
-    __base_url__ = "https://stats.nba.com/stats/"
-
-    headers = HTTP_HEADER
-
-    # def __init__(self, proxies, base_url=BASE_URL, request_header=HTTP_HEADER) -> None:
-    #     self.proxies = proxies
-    #     self.base_url = base_url
-    #     self.request_header = request_header
-
-    # header: field(default_factory=dict) = HTTP_HEADER # ValueError: mutable default <class 'dict'> for field header is not allowed: use default_factory
-    # header: dict = HTTP_HEADER # ValueError: mutable default <class 'dict'> for field header is not allowed: use default_factory
-    # header: field(default_factory=dict) = HTTP_HEADER # ValueError: mutable default <class 'dict'> for field header is not allowed: use default_factory
-
-    # @header.setter
-    # def header(self, v: dict) -> None:
-    #     self.header = REQUEST_HEADER
-
-
-from urllib.parse import urlencode
-
-
-class CommonallPlayers(StatsHTTPHeader):
+@dataclass
+class CommonallPlayers:
 
     __endpoint__ = "CommonallPlayers"
+    
+    IsOnlyCurrentSeason: int = 0
+    LeagueID: str = "00"
+    Season: str = "2021-22"
+    headers: dict = field(default_factory=None)
+    
+    def __post_init__(self):
+        if not self.headers:
+            self.headers = HTTP_HEADERS
+            
+    def get_params(self):
+        return {"IsOnlyCurrentSeason": self.IsOnlyCurrentSeason, "LeagueID": self.LeagueID, "Season": self.Season}
+    
+    def request_data(self):
+        request_url = f"{BASE_URL}{self.__endpoint__}"
+        return requests.get(request_url, params=self.get_params(), headers=self.headers)
+    
+    def to_csv(self):
+        pass
+    
+    def to_json(self):
+        pass
+    
+    def to_sql(self):
+        pass
+    
+    def google_drive(self):
+        pass
+    
+    def to_s3(self):
+        pass
 
-    def __init__(
-        self,
-        IsOnlyCurrentSeason=0,
-        LeagueID="00",
-        Season="2021-22",  # , header=HTTPHeader
-    ) -> None:
-        # these first 3 attributes constitute the (#2) API Params
-        self.IsOnlyCurrentSeason = IsOnlyCurrentSeason
-        self.LeagueID = LeagueID
-        self.Season = Season
+    # def __init__(
+    #     self,
+    #     IsOnlyCurrentSeason=0,
+    #     LeagueID="00",
+    #     Season="2021-22",  # , header=HTTPHeader
+    # ) -> None:
+    #     # these first 3 attributes constitute the (#2) API Params
+    #     self.IsOnlyCurrentSeason = IsOnlyCurrentSeason
+    #     self.LeagueID = LeagueID
+    #     self.Season = Season
 
     # def encode_api_params(self):
     #     return self.__dict__  #  # if only 3 attributes, this works
@@ -73,7 +80,7 @@ class CommonallPlayers(StatsHTTPHeader):
     #     return requests.get(
     #         url_api, params=self.encode_api_params(), headers=self.get_http_header()
     #     )
-
+    
 
 # works, has current defaults (current season)
 c = CommonallPlayers()
