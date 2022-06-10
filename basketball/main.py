@@ -22,6 +22,7 @@ HTTP_HEADERS = {
 BASE_URL = "https://stats.nba.com/stats/"
 @dataclass
 class CommonallPlayers:
+    """this is a class"""
 
     __endpoint__ = "CommonallPlayers"
     
